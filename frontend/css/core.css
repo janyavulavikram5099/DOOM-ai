@@ -1,0 +1,231 @@
+/* ==========================================================================
+   DOOM AI - 3D Holographic Sphere Core & State Animations
+   Golden-Amber Hologram Globe (Inspired by Iron Man / EDITH / Sci-Fi AI Core)
+   States: IDLE, LISTENING, PROCESSING, SPEAKING, EXECUTING, SUCCESS, ERROR, SECURITY
+   ========================================================================== */
+
+.ai-core-container {
+  position: relative;
+  width: 380px;
+  height: 380px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ai-core-container::before {
+  content: '';
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(2, 22, 14, 0.4) 0%, rgba(1, 12, 8, 0.55) 70%, rgba(0, 4, 2, 0.85) 100%);
+  box-shadow: inset 0 0 45px rgba(0, 255, 136, 0.2), 0 0 25px rgba(0, 255, 136, 0.12);
+  border: 1px solid rgba(0, 255, 136, 0.28);
+  z-index: 0;
+  pointer-events: none;
+}
+
+#core-visualizer-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 380px;
+  height: 380px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Outer Hologram Rings */
+.core-outer-ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transition: all 0.5s ease;
+}
+
+.core-outer-ring.ring-1 {
+  width: 360px;
+  height: 360px;
+  border: 1px dashed rgba(0, 255, 136, 0.45);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.2), inset 0 0 15px rgba(0, 255, 136, 0.1);
+  animation: spinClockwise 28s linear infinite;
+  z-index: 1;
+}
+
+.core-outer-ring.ring-2 {
+  width: 320px;
+  height: 320px;
+  border: 2px solid transparent;
+  border-top-color: #00ff88;
+  border-bottom-color: #00b359;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.35);
+  animation: spinCounterClockwise 16s linear infinite;
+  z-index: 1;
+}
+
+.core-outer-ring.ring-3 {
+  width: 275px;
+  height: 275px;
+  border: 1px dotted rgba(160, 255, 200, 0.6);
+  animation: spinClockwise 12s linear infinite;
+  z-index: 1;
+}
+
+.core-glow-field {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 255, 136, 0.28) 0%, rgba(0, 180, 80, 0.12) 45%, transparent 72%);
+  filter: blur(20px);
+  z-index: 1;
+  animation: coreBreathing 4s ease-in-out infinite;
+}
+
+/* Center Reactor Core */
+.core-center-reactor {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240, 255, 245, 0.8) 0%, rgba(0, 255, 136, 0.45) 45%, rgba(0, 160, 70, 0.15) 75%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px #00ff88, 0 0 35px rgba(0, 220, 110, 0.3);
+  z-index: 4;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.reactor-inner-pulse {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 14px #ffffff, 0 0 22px #00ff88;
+  animation: corePulseFast 2s ease-in-out infinite;
+}
+
+.reactor-hex {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(160, 255, 200, 0.75);
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spinCounterClockwise 5s linear infinite;
+}
+
+/* ==================== STATE SPECIFIC ANIMATIONS ==================== */
+
+/* 1. IDLE (Emerald Holographic Breathing) */
+.ai-core-container.state-idle .core-glow-field {
+  animation: coreBreathing 4s ease-in-out infinite;
+}
+
+/* 2. LISTENING (Expanded Sphere & Green Flare) */
+.ai-core-container.state-listening {
+  transform: scale(1.06);
+}
+.ai-core-container.state-listening .core-center-reactor {
+  box-shadow: 0 0 60px #00ff88, 0 0 100px #00cc66;
+}
+.ai-core-container.state-listening .core-outer-ring.ring-2 {
+  border-top-color: #e0fffa;
+  border-bottom-color: #00ff88;
+  animation-duration: 4s;
+}
+
+/* 3. PROCESSING (High Speed Gyroscopic Spin) */
+.ai-core-container.state-processing .core-outer-ring.ring-1 {
+  animation-duration: 4s;
+}
+.ai-core-container.state-processing .core-outer-ring.ring-2 {
+  animation-duration: 2.2s;
+}
+.ai-core-container.state-processing .core-outer-ring.ring-3 {
+  animation-duration: 1.2s;
+}
+.ai-core-container.state-processing .core-center-reactor {
+  background: radial-gradient(circle, #ffffff 0%, #00ff88 45%, #00aa55 80%, transparent 100%);
+  box-shadow: 0 0 60px #00ff88, 0 0 110px #00e676;
+}
+.ai-core-container.state-processing .reactor-inner-pulse {
+  box-shadow: 0 0 30px #ffffff, 0 0 60px #00ff88;
+}
+
+/* 4. SPEAKING (Frequency Wave Ripple & Throbbing Bloom) */
+.ai-core-container.state-speaking .core-center-reactor {
+  animation: speakingThrob 0.55s ease-in-out infinite alternate;
+  box-shadow: 0 0 70px #00ff88, 0 0 120px rgba(0, 255, 136, 0.6);
+}
+.ai-core-container.state-speaking .core-outer-ring.ring-2 {
+  animation-duration: 6s;
+}
+
+/* 5. EXECUTING (High Power Scan) */
+.ai-core-container.state-executing .core-outer-ring.ring-2 {
+  border-width: 3px;
+  animation-duration: 1.8s;
+}
+
+/* 6. SUCCESS (Radiant Emerald Burst) */
+.ai-core-container.state-success .core-center-reactor {
+  background: radial-gradient(circle, #ffffff 0%, #00ffaa 50%, #008855 85%, transparent 100%);
+  box-shadow: 0 0 60px #00ffaa, 0 0 100px #00ff88;
+}
+.ai-core-container.state-success .core-glow-field {
+  background: radial-gradient(circle, rgba(0, 255, 170, 0.4) 0%, rgba(0, 255, 136, 0.2) 50%, transparent 70%);
+}
+
+/* 7. ERROR (Red Alert Pulse) */
+.ai-core-container.state-error .core-center-reactor {
+  background: radial-gradient(circle, #ffffff 0%, #ff3366 50%, #990022 85%, transparent 100%);
+  box-shadow: 0 0 60px #ff3366, 0 0 100px #ff0044;
+  animation: errorShake 0.4s ease-in-out;
+}
+.ai-core-container.state-error .core-outer-ring {
+  border-color: rgba(255, 51, 102, 0.7) !important;
+}
+
+/* 8. AUTHENTICATION REQUIRED (Amber Shield Glow) */
+.ai-core-container.state-security .core-center-reactor {
+  background: radial-gradient(circle, #ffffff 0%, #ff9900 50%, #884400 85%, transparent 100%);
+  box-shadow: 0 0 60px #ff9900;
+}
+
+/* Keyframe Definitions */
+@keyframes spinClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinCounterClockwise {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes coreBreathing {
+  0%, 100% { transform: scale(0.92); opacity: 0.55; }
+  50% { transform: scale(1.15); opacity: 0.9; }
+}
+
+@keyframes corePulseFast {
+  0%, 100% { transform: scale(0.92); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes speakingThrob {
+  0% { transform: scale(0.96); }
+  100% { transform: scale(1.14); }
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}

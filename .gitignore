@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+*.so
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Logs
+*.log
+logs/
+
+# Editor
+.vscode/
+.idea/
+
+# Cache
+.ruff_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large model files (exceed GitHub 100MB limit)
+backend/models/
+*.bin
+*.onnx
+*.pt
+*.pth
+*.safetensors
+
+# Secrets / API keys
+*.env
+.env
+secrets.json

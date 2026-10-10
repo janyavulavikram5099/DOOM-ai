@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOOM - Personal AI Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/hud.css">
+  <link rel="stylesheet" href="/css/core.css?v=2.2">
+</head>
+<body class="theme-futuristic">
+
+  <!-- BACKGROUND HOLOGRAPHIC GRID & PARTICLES -->
+  <div class="hud-background">
+    <div class="grid-overlay"></div>
+    <div class="vignette-overlay"></div>
+    <div class="scanline"></div>
+  </div>
+
+  <!-- TOP HUD BAR -->
+  <header class="hud-header">
+    <div class="hud-brand">
+      <div class="hud-logo-icon">
+        <div class="core-mini-ring"></div>
+        <div class="core-mini-dot"></div>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">DOOM</span>
+        <span class="brand-subtitle">AI SYSTEM V1.0</span>
+      </div>
+    </div>
+
+    <div class="hud-header-center">
+      <div class="status-indicator">
+        <span class="status-pip online" id="status-pip"></span>
+        <span class="status-label" id="status-label">DOOM ONLINE</span>
+      </div>
+      <div class="security-badge" id="security-badge">
+        <span class="badge-icon">🛡️</span>
+        <span class="badge-text" id="security-badge-text">VOICE VERIFIED</span>
+      </div>
+    </div>
+
+    <div class="hud-header-actions">
+      <button class="hud-btn-lang" id="btn-lang-toggle" title="Language: English / తెలుగు (Click to switch)">
+        <span class="lang-icon">🌐</span>
+        <span class="lang-text" id="hud-lang-text">EN / తెలుగు</span>
+      </button>
+      <button class="hud-btn-icon" id="btn-mic-toggle" title="Toggle Listening">
+
+        <span class="icon">🎙️</span>
+      </button>
+      <button class="hud-btn-icon" id="btn-tab-dev" title="Developer Console">
+        <span class="icon">⚡</span>
+      </button>
+      <button class="hud-btn-icon" id="btn-tab-history" title="Command History">
+        <span class="icon">📜</span>
+      </button>
+      <button class="hud-btn-icon" id="btn-tab-settings" title="Settings">
+        <span class="icon">⚙️</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== FIRST-TIME SETUP WIZARD (MODAL/FLOW) ==================== -->
+  <div id="setup-wizard-overlay" class="setup-overlay hidden">
+    <!-- STEP 0: CONNECT DEVICE INITIAL SCREEN -->
+    <div class="setup-card step-0 active" id="step-connect">
+      <div class="setup-header">
+        <div class="setup-logo-huge">DOOM</div>
+        <div class="setup-sub">PERSONAL AI ASSISTANT</div>
+      </div>
+
+      <div class="connect-box-container">
+        <button class="btn-connect-device" id="btn-connect-device">
+          <div class="btn-glow-border"></div>
+          <span class="btn-text">CONNECT DEVICE</span>
+          <span class="btn-subtext">PAIR WINDOWS PC</span>
+        </button>
+      </div>
+
+      <p class="connect-prompt">Connect your Windows PC to activate DOOM.</p>
+    </div>
+
+    <!-- STEP 1: DEVICE DETECTION -->
+    <div class="setup-card step-1" id="step-detect">
+      <div class="setup-step-indicator">STEP 01 // SYSTEM DETECTION</div>
+      <h2 class="setup-title">DEVICE DETECTED</h2>
+      <div class="specs-grid" id="specs-grid">
+        <div class="spec-item">
+          <span class="spec-label">Computer:</span>
+          <span class="spec-value" id="detect-comp-name">Detecting...</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Operating System:</span>
+          <span class="spec-value" id="detect-os">Windows</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">CPU:</span>
+          <span class="spec-value" id="detect-cpu">Detected</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Memory:</span>
+          <span class="spec-value" id="detect-ram">Detected</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">GPU:</span>
+          <span class="spec-value" id="detect-gpu">Detected</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Storage:</span>
+          <span class="spec-value" id="detect-storage">Detected</span>
+        </div>
+      </div>
+      <button class="hud-btn primary mt-4" id="btn-detect-next">PROCEED TO PAIRING →</button>
+    </div>
+
+    <!-- STEP 2: DEVICE PAIRING -->
+    <div class="setup-card step-2" id="step-pair">
+      <div class="setup-step-indicator">STEP 02 // HARDWARE PAIRING</div>
+      <h2 class="setup-title">DOOM DEVICE PAIRING</h2>
+      <p class="setup-desc">Generating encrypted hardware-bound identity for local assistant services.</p>
+      <div class="device-id-badge">
+        <span class="id-label">DOOM DEVICE ID</span>
+        <span class="id-code" id="generated-device-id">DM-....-....</span>
+      </div>
+      <p class="security-note">Local credentials stored securely in Windows database. Secret keys are never exposed.</p>
+      <button class="hud-btn primary mt-4" id="btn-pair-next">CONFIRM PAIRING →</button>
+    </div>
+
+    <!-- STEP 3: ACCESS & PERMISSIONS SETUP -->
+    <div class="setup-card step-3" id="step-perms">
+      <div class="setup-step-indicator">STEP 03 // SECURITY BOUNDARIES</div>
+      <h2 class="setup-title">DOOM ACCESS SETUP</h2>
+      <p class="setup-desc">To control your computer, DOOM requests safe, least-privilege Windows permissions.</p>
+      <div class="perms-list" id="perms-list">
+        <!-- Dynamically populated permissions -->
+      </div>
+      <button class="hud-btn primary mt-4" id="btn-perms-next">GRANT & CONTINUE →</button>
+    </div>
+
+    <!-- STEP 4: VOICE PROFILE ENROLLMENT -->
+    <div class="setup-card step-4" id="step-voice">
+      <div class="setup-step-indicator">STEP 04 // ACOUSTIC PROFILE</div>
+      <h2 class="setup-title">VOICE PROFILE SETUP</h2>
+      <p class="setup-desc">DOOM only responds to authorized voice patterns. Please speak the enrollment phrase:</p>
+      <div class="phrase-quote">"Hey Doom, initialize my voice profile."</div>
+
+      <div class="voice-samples-row">
+        <div class="sample-box" id="sample-box-1">
+          <span class="box-num">SAMPLE 1</span>
+          <span class="box-status">WAITING</span>
+        </div>
+        <div class="sample-box" id="sample-box-2">
+          <span class="box-num">SAMPLE 2</span>
+          <span class="box-status">WAITING</span>
+        </div>
+        <div class="sample-box" id="sample-box-3">
+          <span class="box-num">SAMPLE 3</span>
+          <span class="box-status">WAITING</span>
+        </div>
+      </div>
+
+      <div class="voice-enroll-actions">
+        <button class="hud-btn primary" id="btn-record-sample">RECORD SAMPLE</button>
+      </div>
+      <div class="enroll-status-msg" id="enroll-status-msg">Click 'Record Sample' to record sample 1.</div>
+      <button class="hud-btn primary mt-4 hidden" id="btn-voice-next">INITIALIZE ASSISTANT →</button>
+    </div>
+
+    <!-- STEP 5: SETUP COMPLETE BANNER -->
+    <div class="setup-card step-5" id="step-complete">
+      <div class="complete-box">
+        <div class="complete-banner">DOOM IS READY</div>
+        <div class="complete-checklist">
+          <div class="check-item"><span class="check-mark">✓</span> DEVICE CONNECTED</div>
+          <div class="check-item"><span class="check-mark">✓</span> VOICE VERIFIED</div>
+          <div class="check-item"><span class="check-mark">✓</span> BACKGROUND SERVICE</div>
+          <div class="check-item"><span class="check-mark">✓</span> MICROPHONE</div>
+          <div class="check-item"><span class="check-mark">✓</span> SYSTEM CONTROL</div>
+        </div>
+        <div class="master-quote">"At your service, Master."</div>
+        <button class="hud-btn primary-glow mt-4" id="btn-enter-dashboard">ENTER CONTROL CENTER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN ASSISTANT HUD ==================== -->
+  <main class="hud-main" id="main-hud">
+
+    <!-- LEFT PANEL: SYSTEM TELEMETRY -->
+    <aside class="hud-panel left-panel">
+      <div class="panel-header">
+        <span class="panel-title">SYSTEM STATUS</span>
+        <span class="panel-tag">LIVE TELEMETRY</span>
+      </div>
+
+      <div class="telemetry-gauges">
+        <div class="gauge-item">
+          <div class="gauge-meta">
+            <span class="gauge-name">CPU</span>
+            <span class="gauge-val" id="tele-cpu-val">--%</span>
+          </div>
+          <div class="gauge-track">
+            <div class="gauge-fill" id="tele-cpu-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="gauge-item">
+          <div class="gauge-meta">
+            <span class="gauge-name">RAM</span>
+            <span class="gauge-val" id="tele-ram-val">--%</span>
+          </div>
+          <div class="gauge-track">
+            <div class="gauge-fill" id="tele-ram-fill" style="width: 0%"></div>
+          </div>
+          <div class="gauge-sub" id="tele-ram-sub">-- / -- GB</div>
+        </div>
+
+        <div class="gauge-item">
+          <div class="gauge-meta">
+            <span class="gauge-name">GPU</span>
+            <span class="gauge-val" id="tele-gpu-val">--%</span>
+          </div>
+          <div class="gauge-track">
+            <div class="gauge-fill" id="tele-gpu-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="gauge-item">
+          <div class="gauge-meta">
+            <span class="gauge-name">STORAGE</span>
+            <span class="gauge-val" id="tele-disk-val">--%</span>
+          </div>
+          <div class="gauge-track">
+            <div class="gauge-fill" id="tele-disk-fill" style="width: 0%"></div>
+          </div>
+          <div class="gauge-sub" id="tele-disk-sub">-- GB Free</div>
+        </div>
+
+        <div class="gauge-item">
+          <div class="gauge-meta">
+            <span class="gauge-name">BATTERY</span>
+            <span class="gauge-val" id="tele-battery-val">--%</span>
+          </div>
+          <div class="gauge-track">
+            <div class="gauge-fill" id="tele-battery-fill" style="width: 0%"></div>
+          </div>
+          <div class="gauge-sub" id="tele-battery-sub">AC Connected</div>
+        </div>
+
+        <div class="gauge-item">
+          <div class="gauge-meta">
+            <span class="gauge-name">NETWORK</span>
+            <span class="gauge-val network-badge" id="tele-net-val">ONLINE</span>
+          </div>
+          <div class="gauge-sub" id="tele-net-sub">Offline Mode: Laptop Control Ready</div>
+        </div>
+      </div>
+
+      <div class="security-panel-block">
+        <div class="block-title">DEVICE AUTHENTICATION</div>
+        <div class="block-detail" id="hud-device-id">ID: VK-....</div>
+        <div class="block-detail" id="hud-bg-status">BACKGROUND: ACTIVE</div>
+      </div>
+    </aside>
+
+    <!-- CENTER PANEL: AI CORE REACTOR & HUD -->
+    <section class="hud-center-core">
+      <!-- TACTICAL HOLOGRAPHIC WORLD MAP (BACKSIDE OF CIRCLE) -->
+      <canvas id="world-map-backdrop-canvas" class="world-map-backdrop" width="960" height="540" style="position: absolute; top: 46%; left: 50%; transform: translate(-50%, -50%); width: 960px; height: 540px; pointer-events: none; z-index: 0;"></canvas>
+
+      <div class="core-header">
+        <h1 class="core-title">DOOM</h1>
+        <div class="core-state-badge" id="core-state-text">◉ AI CORE ◉</div>
+      </div>
+
+      <!-- ANIMATED AI CORE REACTOR -->
+      <div class="ai-core-container" id="ai-core">
+        <div class="core-outer-ring ring-1"></div>
+        <div class="core-outer-ring ring-2"></div>
+        <div class="core-outer-ring ring-3"></div>
+        <div class="core-glow-field"></div>
+        
+        <!-- Interactive 3D Holographic Sphere Visualizer -->
+        <canvas id="core-visualizer-canvas" width="380" height="380"></canvas>
+
+        <div class="core-center-reactor">
+          <div class="reactor-inner-pulse"></div>
+          <div class="reactor-hex"></div>
+        </div>
+      </div>
+
+      <!-- SOUND WAVE SPECTRUM -->
+      <div class="waveform-container">
+        <canvas id="waveform-canvas" width="460" height="50"></canvas>
+      </div>
+
+      <!-- STATUS & EXPANDED MULTI-COMMAND DIALOGUE STREAM -->
+      <div class="core-transcript-box" id="core-transcript-box">
+        <div class="transcript-box-header">
+          <div class="transcript-header-left">
+            <span class="transcript-live-dot"></span>
+            <span class="transcript-feed-title">COMMAND & DIALOGUE STREAM</span>
+            <span class="transcript-count-badge" id="transcript-count-badge">0 COMMANDS</span>
+          </div>
+          <div class="transcript-header-right">
+            <button class="transcript-clear-btn" id="btn-clear-transcript" title="Clear Dialogue Stream">✕ CLEAR</button>
+          </div>
+        </div>
+        <div class="transcript-stream" id="transcript-stream">
+          <div class="transcript-item doom-item">
+            <div class="item-meta">
+              <span class="item-speaker speaker-doom">DOOM</span>
+              <span class="item-time">LIVE</span>
+            </div>
+            <div class="item-content">"Hello Master"</div>
+          </div>
+        </div>
+        <!-- Hidden legacy hooks for compatibility -->
+        <span id="transcript-speaker" class="hidden" style="display: none;">DOOM</span>
+        <span id="transcript-text" class="hidden" style="display: none;">"Hello Master"</span>
+      </div>
+
+      <!-- DIRECT COMMAND BAR (VOICE + TEXT FALLBACK - SUPPORTS BIG COMMANDS) -->
+      <div class="command-input-bar">
+        <input type="text" id="text-command-input" placeholder="Say 'Hey Doom...' or type big command (e.g. 'open whatsapp and send hi to Amma', 'search in google what is an operating system')...">
+        <button class="hud-btn primary" id="btn-submit-command">EXECUTE</button>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: CONSOLE TABS (DEVELOPER / HISTORY / SETTINGS) -->
+    <aside class="hud-panel right-panel">
+      <div class="panel-tabs">
+        <button class="tab-btn active" id="tab-btn-dev" data-tab="dev">DEVELOPER</button>
+        <button class="tab-btn" id="tab-btn-history" data-tab="history">HISTORY</button>
+        <button class="tab-btn" id="tab-btn-settings" data-tab="settings">SETTINGS</button>
+      </div>
+
+      <!-- TAB 1: DEVELOPER MODE CONSOLE -->
+      <div class="tab-content active" id="tab-content-dev">
+        <div class="dev-header">
+          <span class="dev-title">AI INTELLIGENCE & CONSOLE</span>
+          <span class="dev-badge" id="dev-compiler-badge">AI ACTIVE</span>
+        </div>
+        
+        <!-- AI ANSWER DISPLAYER (Doom AI Displayer) -->
+        <div class="ai-answer-displayer" id="ai-answer-displayer">
+          <div class="ai-displayer-head">
+            <div class="ai-head-left">
+              <span class="ai-doom-sparkle">✦</span>
+              <span class="ai-head-title">DOOM AI INTELLIGENCE</span>
+              <span class="ai-lang-badge" id="ai-lang-badge">GOOGLE GROUNDED</span>
+            </div>
+            <div class="ai-head-right">
+              <button class="ai-hud-icon-btn" id="btn-mute-chat" title="Mute AI Chat Voice (Chat Only)">🔊</button>
+              <button class="ai-hud-icon-btn" id="btn-copy-answer" title="Copy Full Answer">📋</button>
+              <button class="ai-hud-icon-btn" id="btn-clear-answer" title="Clear Displayer">✕</button>
+            </div>
+          </div>
+
+          <!-- Searching indicator spinner -->
+          <div class="ai-searching-state hidden" id="ai-searching-state">
+            <span class="ai-spinner">⟳</span>
+            <span class="ai-search-msg" id="ai-search-msg">Searching Google & Synthesizing Doom AI Analysis...</span>
+          </div>
+
+          <!-- Question prompt row -->
+          <div class="ai-question-row" id="ai-question-row">
+            <span class="ai-q-prefix">Q:</span>
+            <span class="ai-question-line" id="ai-question-line">Ask any question (e.g. 'search in google what is an operating system')...</span>
+          </div>
+
+          <!-- Answer Body -->
+          <div class="ai-answer-body" id="ai-answer-body">Ask DOOM anything — questions, code generation, programming explanations, or system commands. Comprehensive Google-searched answers will appear formatted here with in-depth Doom AI explanations.</div>
+
+          <!-- Source Link -->
+          <div class="ai-answer-source hidden" id="ai-answer-source">
+            <span class="ai-source-label">🌐 GOOGLE SEARCH GROUNDING:</span>
+            <a class="ai-source-link" id="ai-source-link" href="#" target="_blank"></a>
+          </div>
+
+          <div class="ai-powered-by" id="ai-powered-by">⚡ Powered by Doom AI & Live Web Grounding</div>
+        </div>
+
+        <!-- Hidden fallback element for background logging -->
+        <div id="terminal-output" class="hidden" style="display: none;"></div>
+      </div>
+
+      <!-- TAB 2: COMMAND HISTORY -->
+      <div class="tab-content" id="tab-content-history">
+        <div class="history-header">
+          <span class="hist-title">COMMAND HISTORY</span>
+          <button class="hud-btn danger-sm" id="btn-clear-history">CLEAR</button>
+        </div>
+        <div class="history-stream" id="history-stream">
+          <!-- Dynamically populated history entries -->
+        </div>
+      </div>
+
+      <!-- TAB 3: SETTINGS -->
+      <div class="tab-content" id="tab-content-settings">
+        <div class="settings-group">
+          <h4 class="set-title">GENERAL</h4>
+          <label class="set-row">
+            <span>Start with Windows</span>
+            <input type="checkbox" id="set-startup" checked>
+          </label>
+          <label class="set-row">
+            <span>Minimize to System Tray</span>
+            <input type="checkbox" id="set-tray" checked>
+          </label>
+          <label class="set-row">
+            <span>Background Assistant</span>
+            <input type="checkbox" id="set-bg" checked>
+          </label>
+        </div>
+
+        <div class="settings-group">
+          <h4 class="set-title">VOICE & TTS</h4>
+          <label class="set-row">
+            <span>Speaker Verification</span>
+            <input type="checkbox" id="set-speaker-verif" checked>
+          </label>
+          <label class="set-row">
+            <span>TTS Voice</span>
+            <select id="set-voice-select">
+              <option value="en-US-AndrewNeural" selected>DOOM Deep Male (Neural Andrew)</option>
+              <option value="en-US-BrianNeural">DOOM Adult Male (Neural Brian)</option>
+              <option value="en-IN-PrabhatNeural">DOOM Indian Male (Neural Prabhat)</option>
+              <option value="Microsoft David Desktop">Windows David (Desktop Baritone)</option>
+            </select>
+          </label>
+          <button class="hud-btn primary-sm mt-2" id="btn-re-enroll-voice">Re-Enroll Voice Profile</button>
+        </div>
+
+        <div class="settings-group">
+          <h4 class="set-title">GOOGLE GEMINI AI INTEGRATION</h4>
+          <div style="font-size: 11px; color: #7fba9a; margin-bottom: 8px;">
+            Connect your Google Gemini API key to unlock full cloud intelligence or use built-in Gemini synthesis.
+          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+            <input type="password" id="set-gemini-key" placeholder="Paste Gemini API Key (AIzaSy...)" style="flex: 1; background: rgba(0, 20, 10, 0.7); border: 1px solid #1fe376; color: #e0f9ec; padding: 6px 10px; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 11px; outline: none;">
+            <button class="hud-btn primary-sm" id="btn-save-gemini-key">SAVE</button>
+          </div>
+          <div id="gemini-status-indicator" style="font-size: 11px; color: #7fba9a; display: flex; justify-content: space-between; align-items: center;">
+            <span>Mode: <strong id="gemini-mode-text" style="color: #1fe376;">Gemini Synthesis (Active)</strong></span>
+            <button class="hud-btn danger-sm" id="btn-clear-gemini-key" style="display: none; padding: 2px 8px; font-size: 10px;">Clear Key</button>
+          </div>
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size: 10px; color: #1fe376; text-decoration: underline; margin-top: 5px; display: inline-block;">
+            Get a free Gemini API key from Google AI Studio →
+          </a>
+        </div>
+
+        <div class="settings-group">
+          <h4 class="set-title">SYSTEM PAIRING</h4>
+          <div class="set-detail" id="set-device-info">Device: Connected</div>
+          <button class="hud-btn danger-sm mt-2" id="btn-reset-pairing">Unpair / Reset DOOM</button>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- SCRIPTS -->
+  <script src="/js/world_map_data.js"></script>
+  <script src="/js/core_visualizer.js?v=2.3"></script>
+  <script src="/js/setup_wizard.js"></script>
+  <script src="/js/diagnostics.js"></script>
+  <script src="/js/terminal.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
