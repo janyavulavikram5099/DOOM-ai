@@ -1,7 +1,6 @@
 /**
- * DOOM AI - First-Time Setup Wizard
- * Handles the step-by-step device connection, hardware detection, pairing,
- * permissions grant, and 3-sample voice enrollment flow.
+ * DOOM AI - Setup Wizard (Disabled - Auto-Activated)
+ * Device is auto-paired on startup. No activation required.
  */
 
 class SetupWizard {
@@ -9,24 +8,27 @@ class SetupWizard {
     this.overlay = document.getElementById('setup-wizard-overlay');
     this.currentStep = 0;
     this.voiceSamplesCount = 0;
-    this.initEventListeners();
-    this.checkInitialPairing();
+    // Always hide wizard — no activation needed
+    this.hide();
+    this._updateDeviceId();
   }
 
-  async checkInitialPairing() {
+  async _updateDeviceId() {
     try {
       const res = await fetch('/api/status');
       if (res.ok) {
         const data = await res.json();
-        if (data.is_paired) {
-          this.hide();
-          const devIdEl = document.getElementById('hud-device-id');
-          if (devIdEl && data.pairing) {
-            devIdEl.innerText = `ID: ${data.pairing.device_id}`;
-          }
+        const devIdEl = document.getElementById('hud-device-id');
+        if (devIdEl && data.pairing) {
+          devIdEl.innerText = `ID: ${data.pairing.device_id}`;
         }
       }
     } catch (e) {}
+  }
+
+  async checkInitialPairing() {
+    // No-op: device is always auto-paired
+    this.hide();
   }
 
   initEventListeners() {

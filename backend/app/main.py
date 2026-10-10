@@ -132,6 +132,14 @@ async def lifespan(fastapi_app: FastAPI):
     # Start background service
     background_service.start()
 
+    # Auto-pair this device silently on every startup (no activation wizard needed)
+    try:
+        if not DeviceAuthenticator.is_paired():
+            DeviceAuthenticator.pair_current_device()
+            logger.info("DOOM AI: Device auto-paired. No activation required.")
+    except Exception as ex:
+        logger.debug(f"Auto-pair notice: {ex}")
+
     # Automatically ensure DOOM AI is permanently registered in Windows Startup
     try:
         from backend.service.startup import StartupManager

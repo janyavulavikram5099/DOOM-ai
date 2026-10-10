@@ -226,11 +226,8 @@ class VikramApp {
     const { type, data } = msg;
 
     if (type === 'init') {
-      // Check if device is paired
-      const isPaired = data.pairing && data.pairing.is_paired;
-      if (!isPaired && window.setupWizard) {
-        window.setupWizard.show();
-      } else if (window.setupWizard) {
+      // Always hide setup wizard — device is auto-paired on startup
+      if (window.setupWizard) {
         window.setupWizard.hide();
         const devIdEl = document.getElementById('hud-device-id');
         if (devIdEl && data.pairing) {
